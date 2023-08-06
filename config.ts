@@ -1,6 +1,7 @@
 const config = {
   defaultInterval : 3 * 60 * 1000, // 6 seconds
-  collapseConsole: false,
+  collapseConsole: true,
+  silenceConsole: true,
   clearConsole: false,
   siteWatch : [{
     name: "reddit",
