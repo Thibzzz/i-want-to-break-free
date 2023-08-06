@@ -1,6 +1,7 @@
 const config = {
   defaultInterval : 0.1 * 60 * 1000, // 6 seconds
-  collapseConsole: true,
+  collapseConsole: false,
+  clearConsole: true,
   siteWatch : [{
     name: "reddit",
     url: "https://wwww.reddit.com/",
@@ -23,6 +24,11 @@ const config = {
           offenderSelector: "xpromo-garlic-bread-blocking-modal-desktop"
         },
         {
+          name: "remove annoying cookies",
+          type: 'tag',
+          offenderSelector: "reddit-cookie-banner"
+        },
+        {
           name: "remove NSFW modal",
           type: 'tag',
           offenderSelector : "xpromo-nsfw-blocking-modal-desktop"
@@ -32,6 +38,12 @@ const config = {
           type: "styleTag",
           offenderSelector : "body",
           offendingStyle: "pointer-events: none; overflow: hidden;"
+        },
+        {
+          name: "purge class fixed that blocks scroll",
+          type: "cssClass",
+          offenderSelector: "reddit-header-large",
+          offendingClass: "fixed",
         },
         {
           name: "purge blur",
@@ -45,4 +57,4 @@ const config = {
   ]
 }
 
-export default config;
+export { config };

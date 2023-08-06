@@ -1,10 +1,9 @@
-import { cp } from "fs"
-import config from "./config"
-import type { Rule, StyleRule, TagRule } from "./domain"
-
-const { ruleSets, siteWatch } = config
+import { config } from "./config"
+import type { Rule, StyleRule, TagRule, ClassRule } from "./domain"
 
 console.log("IW2BF Boot content script : ", config)
+
+const { ruleSets, siteWatch } = config
 
 const removeOffendingTag = (rule: TagRule) => {
   console.log("IW2BF removeOffendingTag : ", rule)
@@ -47,7 +46,21 @@ const removeOffendingStyle = (rule: StyleRule) => {
   return element.setAttribute("style", newStyle)
 }
 
+const removeOffendingClass = (rule: ClassRule) => {
+  console.log("IW2BF removeOffendingClass : ", rule)
+  let el = selectElement(rule) ?? false
+  if (!el || !el.classList) return
+  console.log("IW2BF removeOffendingClass : ", el)
+  el.classList.remove(rule.offendingClass)
+}
+const newLog = (timeString) => {
+  if(config.collapseConsole) return console.groupCollapsed(timeString)
+  console.group(timeString)
+}
+
 const runRuleSetByName = (name: string) => {
+  let timeString = setTimeString()
+  newLog(timeString)
   console.log("IW2BF runRuleSetByName : ", name)
   const [ruleSet] = ruleSets.filter((a) => a.name === name) ?? []
   if (!ruleSet.rules)
@@ -61,21 +74,26 @@ const runRuleSetByName = (name: string) => {
       case "styleTag":
         removeOffendingStyle(rule)
         break
+      case "cssClass":
+        removeOffendingClass(rule)
+        break
       default:
         console.log("IW2BF runRuleSetByName : default")
         throw new Error(`IW2BF runRuleSetByName : ${rule.type} not found`)
     }
   })
+  console.groupEnd()
+  
 }
 
-function App() {
-  
-  document.addEventListener("readystatechange", (event) => {
-    let run = false;
-    if (document.readyState === "complete") run = true
-    if (!run) return
-    const timeString = `IW2BF-${new Date().getTime()}`
-    console.group(timeString)
+const setTimeString = () => {
+  let timeString = `IW2BF-${new Date().getTime()}`
+  return timeString
+}
+
+class App {
+
+  init() {
     const currentHost: string = location.hostname ?? "localhost"
     console.log(`IW2BF : ${currentHost}}`)
 
@@ -86,15 +104,31 @@ function App() {
       const watchInterval = siteWatch[site].interval ?? config.defaultInterval
       runRuleSetByName(siteWatch[site].name)
       setInterval(() => {
+        if (config.clearConsole) console.clear()
         runRuleSetByName(siteWatch[site].name)
       }
       , watchInterval)
-    }
-    console.groupEnd()
-    if (config.collapseConsole) {
-      console.groupCollapsed(timeString)
-    }    
-  })
+    } 
+  }
+
+  launchOnReadyStateComplete() {
+    console.log("IW2BF launching App")
+
+    document.addEventListener("readystatechange", (event) => {
+      console.log("IW2BF watching page state :", event)
+      let run = false;
+      if (document.readyState === "complete") run = true
+      if (!run) return
+      this.init()
+    })
+  }
 }
 
-export default App
+const app = new App()
+try {
+  app.launchOnReadyStateComplete()
+} catch(e) {
+  console.error("IW2BF Error : ", e)
+}
+
+export default app
