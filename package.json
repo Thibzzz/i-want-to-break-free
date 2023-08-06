@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "description": "An extension to block annoying UX and UI elements",
   "scripts": {
-    "dev": "plasmo dev  --target=chrome-mv3",
-    "dev:ff": "plasmo dev  --target=firefox-mv3",
+    "dev": "plasmo dev  --target=chrome-mv3 --verbose",
+    "dev:ff": "plasmo dev  --target=firefox-mv2 --verbose",
     "build": "plasmo build",
     "test": "plasmo test"
   },

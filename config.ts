@@ -1,7 +1,7 @@
 const config = {
-  defaultInterval : 0.1 * 60 * 1000, // 6 seconds
+  defaultInterval : 3 * 60 * 1000, // 6 seconds
   collapseConsole: false,
-  clearConsole: true,
+  clearConsole: false,
   siteWatch : [{
     name: "reddit",
     url: "https://wwww.reddit.com/",
@@ -12,6 +12,22 @@ const config = {
     {
       name: "reddit",
       rules: [
+        {
+          name : "remove ab testing shit",
+          type: 'tag',
+          offenderSelector: 'shreddit-experience-tree'
+        },
+        {
+          name: "remove account modal",
+          type: 'tag',
+          offenderSelector: "accountmanager-iframe"
+        },
+        {
+          name: "remove annonying google modal",
+          type: 'tag',
+          selectById: true,
+          offenderSelector: "google-one-tap"
+        },
         {
           name: "remove login modal",
           type: 'tag',

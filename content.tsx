@@ -5,6 +5,24 @@ console.log("IW2BF Boot content script : ", config)
 
 const { ruleSets, siteWatch } = config
 
+const getBrowser = () => {
+  const browserString = process.env.PLASMO_BROWSER;
+  console.log("IW2BF getBrowser : ", browserString)
+  return browserString
+}
+
+const isChrome = () => {
+  const browserString = getBrowser()
+  if (!browserString) return false
+  return browserString === "chrome"
+}
+
+const isFirefox = () => {
+  const browserString = getBrowser()
+  if (!browserString) return false
+  return browserString === "firefox"
+}
+
 const removeOffendingTag = (rule: TagRule) => {
   console.log("IW2BF removeOffendingTag : ", rule)
   const elements = document.querySelectorAll(rule.offenderSelector)
@@ -48,18 +66,26 @@ const removeOffendingStyle = (rule: StyleRule) => {
 
 const removeOffendingClass = (rule: ClassRule) => {
   console.log("IW2BF removeOffendingClass : ", rule)
-  let el = selectElement(rule) ?? false
+  let [el] = selectElement(rule) ?? false
   if (!el || !el.classList) return
+  if (!el.classList.length) return
   console.log("IW2BF removeOffendingClass : ", el)
   el.classList.remove(rule.offendingClass)
 }
-const newLog = (timeString) => {
+
+const newLog = (timeString: string) => {
   if(config.collapseConsole) return console.groupCollapsed(timeString)
-  console.group(timeString)
+  return console.group(timeString)
+}
+
+const getTimeString = () => {
+  const dateString = new Date().getTime()
+  let timeString = `IW2BF-${dateString}`
+  return timeString
 }
 
 const runRuleSetByName = (name: string) => {
-  let timeString = setTimeString()
+  const timeString = getTimeString()
   newLog(timeString)
   console.log("IW2BF runRuleSetByName : ", name)
   const [ruleSet] = ruleSets.filter((a) => a.name === name) ?? []
@@ -86,10 +112,6 @@ const runRuleSetByName = (name: string) => {
   
 }
 
-const setTimeString = () => {
-  let timeString = `IW2BF-${new Date().getTime()}`
-  return timeString
-}
 
 class App {
 
@@ -114,13 +136,21 @@ class App {
   launchOnReadyStateComplete() {
     console.log("IW2BF launching App")
 
-    document.addEventListener("readystatechange", (event) => {
-      console.log("IW2BF watching page state :", event)
-      let run = false;
-      if (document.readyState === "complete") run = true
-      if (!run) return
+    if (isChrome()) {
+      console.log("IW2BF isChrome")
+      document.addEventListener("readystatechange", (event) => {
+        console.log("IW2BF watching page state :", document.readyState)
+        let run = false;
+        if (document.readyState === "complete") run = true
+        if (!run) return
+        this.init()
+      })
+    }
+    if (isFirefox()) {
+      console.log("IW2BF isFirefox")
       this.init()
-    })
+      
+    }
   }
 }
 
