@@ -1,13 +1,17 @@
 {
   "name": "block-blockers",
   "displayName": "I want to break free",
+  "author": "Thibaut Courtois",
   "version": "0.0.1",
-  "description": "An extension to block annoying UX and UI elements",
+  "homepage": "https://github.com/thibzzz",
+  "description": "An extension to block annoying UX and UI elements from targeted websites",
   "scripts": {
     "dev": "plasmo dev  --target=chrome-mv3 --verbose",
     "dev:ff": "plasmo dev  --target=firefox-mv2 --verbose",
     "build": "plasmo build",
-    "test": "plasmo test"
+    "build:ff": "plasmo build --target=firefox-mv2 --verbose --zip --source-maps",
+    "test": "plasmo test",
+    "bundle:source": "git archive -o source-latest.zip HEAD"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.32.0",

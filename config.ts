@@ -57,6 +57,12 @@ const config = {
           offendingStyle: "pointer-events: none; overflow: hidden;"
         },
         {
+          name: "blurry 4 px bg",
+          type: "styleTag",
+          offenderSelector: "sidebar-grid theme-rpl",
+          offendingStyle: "filter: blur(4px)"
+        },
+        {
           name: "purge class fixed that blocks scroll",
           type: "cssClass",
           offenderSelector: "reddit-header-large",

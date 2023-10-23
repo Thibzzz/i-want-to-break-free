@@ -35,7 +35,7 @@ const isFirefox = () => {
 
 const removeOffendingTag = (rule: TagRule) => {
   Log("IW2BF removeOffendingTag : ", rule)
-  const elements = document.querySelectorAll(rule.offenderSelector)
+  const elements = document.querySelectorAll(rule.offenderSelector) ?? false
   Log("IW2BF removeOffendingTag : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
@@ -57,12 +57,12 @@ const selectElement = (rule: Rule) => {
     return el
   }
   el = document.querySelectorAll(rule.offenderSelector)
-  return el
+  return el ?? false
 }
 
 const removeOffendingStyle = (rule: StyleRule) => {
   Log("IW2BF removeOffendingStyle : ", rule)
-  const [element] = selectElement(rule);
+  const [element] = selectElement(rule) ?? false
   Log("IW2BF removeOffendingStyle : ", element)
   if (!element) return
   const style = element.hasAttribute("style")
@@ -106,13 +106,25 @@ const runRuleSetByName = (name: string) => {
   ruleSet.rules.forEach((rule) => {
     switch (rule.type) {
       case "tag":
-        removeOffendingTag(rule)
+        try {
+          removeOffendingTag(rule)
+        } catch(e) {
+          LogError("IW2BF Tag Error : ", e)
+        }
         break
       case "styleTag":
-        removeOffendingStyle(rule)
+        try {
+          removeOffendingStyle(rule)
+        } catch (e) {
+          LogError("IW2BF Style Error : ", e)
+        }
         break
       case "cssClass":
-        removeOffendingClass(rule)
+        try {
+          removeOffendingClass(rule)
+        } catch (e) {
+          LogError("IW2BF Class Error : ", e)
+        }
         break
       default:
         Log("IW2BF runRuleSetByName : default")
@@ -120,7 +132,6 @@ const runRuleSetByName = (name: string) => {
     }
   })
   console.groupEnd()
-  
 }
 
 
@@ -154,12 +165,20 @@ class App {
         let run = false;
         if (document.readyState === "complete") run = true
         if (!run) return
-        this.init()
+        try {
+          this.init()
+        } catch (e) {
+          LogError("IW2BF Error in Chrome Launcher : ", e)
+        }
       })
     }
     if (isFirefox()) {
       Log("IW2BF isFirefox")
-      this.init()
+      try {
+        this.init()
+      } catch(e) {
+        LogError("IW2BF Error in FF Launcher : ", e)
+      }
       
     }
   }
