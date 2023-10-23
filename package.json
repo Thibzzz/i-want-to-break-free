@@ -2,7 +2,7 @@
   "name": "block-blockers",
   "displayName": "I want to break free",
   "author": "Thibaut Courtois",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/thibzzz",
   "description": "An extension to block annoying UX and UI elements from targeted websites",
   "scripts": {
