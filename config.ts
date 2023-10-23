@@ -1,6 +1,6 @@
 const config = {
-  defaultInterval : 3 * 60 * 1000, // 6 seconds
-  collapseConsole: true,
+  defaultInterval : 6 * 1000, // 6 seconds
+  collapseConsole: false,
   silenceConsole: true,
   clearConsole: false,
   siteWatch : [{
@@ -60,7 +60,8 @@ const config = {
           name: "blurry 4 px bg",
           type: "styleTag",
           offenderSelector: "sidebar-grid theme-rpl",
-          offendingStyle: "filter: blur(4px)"
+          offendingStyle: "filter: blur(4px)",
+          selectByClass: true
         },
         {
           name: "purge class fixed that blocks scroll",
