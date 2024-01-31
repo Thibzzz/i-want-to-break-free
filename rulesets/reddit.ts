@@ -2,6 +2,12 @@ const redditRules = {
   name: "reddit",
   rules: [
     {
+      name: "remove google id",
+      type: 'tag',
+      selectById: true,
+      offenderSelector: "credential_picker_container"
+    },
+    {
       name : "remove ab testing shit",
       type: 'tag',
       offenderSelector: 'shreddit-experience-tree'
