@@ -1,6 +1,5 @@
 import { config } from "./config"
-import type { Rule, StyleRule, TagRule, ClassRule } from "./domain"
-
+import type { ClassRule, ContentRule, Rule, StyleRule, TagRule, AriaRule, AriaTagRule } from "./domain"
 
 const Log = (...args: any[]) => {
   if (config.silenceConsole) return
@@ -16,7 +15,7 @@ Log("IW2BF Boot content script : ", config)
 const { ruleSets, siteWatch } = config
 
 const getBrowser = () => {
-  const browserString = process.env.PLASMO_BROWSER;
+  const browserString = process.env.PLASMO_BROWSER
   Log("IW2BF getBrowser : ", browserString)
   return browserString
 }
@@ -33,6 +32,64 @@ const isFirefox = () => {
   return browserString === "firefox"
 }
 
+const removeOffendingTagByAriaLabel = (rule: AriaRule) => {
+  Log("IW2BF removeOffendingTagByAriaLabel : ", rule)
+  const selector = `[aria-label="${rule.offenderSelector}"]`
+  const elements = document.querySelectorAll(selector) ?? false
+  Log("IW2BF removeOffendingTagByAriaLabel : ", elements)
+  if (!elements) return
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i]
+    Log("IW2BF removeOffendingTagByAriaLabel : ", element)
+    return element.remove()
+  }
+}
+
+/**
+ * 
+ * @param rule Grab html node elements that contain aria-label then move up their parent elements recursively until you find the offending selector in their class string, if it's the case, remove this parent element and continue.
+ * @returns 
+ */
+const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
+  const safetyBump = 15;
+  Log("IW2BF removeOffendingTagsByAriaLabel : ", rule)
+  const selector = `[aria-label="${rule.ariaLabel}"]`
+  const elements = document.querySelectorAll(selector) ?? false
+  Log("IW2BF removeOffendingTagsByAriaLabel : ", elements)
+  if (!elements) return
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i]
+    Log("IW2BF removeOffendingTagsByAriaLabel : ", element)
+    let parent = element.parentElement
+    if (!parent) continue
+    let iteration = 0
+    while (parent || iteration > safetyBump) {
+      iteration++;
+      const classString = parent.getAttribute("class") ?? ""
+      if (classString.includes(rule.offenderSelector)) {
+        Log("IW2BF removeOffendingTagsByAriaLabel : ", parent)
+        return parent.remove()
+      }
+      parent = parent.parentElement
+    }
+  }
+  
+}
+
+const removeOffendingTagByContent = (rule: ContentRule) => {
+  Log("IW2BF removeOffendingTagByContent : ", rule)
+  const elements = document.querySelectorAll(rule.offenderSelector) ?? false
+  Log("IW2BF removeOffendingTagByContent : ", elements)
+  if (!elements) return
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i]
+    Log("IW2BF removeOffendingTagByContent : ", element)
+    const text = element.textContent ?? ""
+    if (!text.includes(rule.content)) continue
+    return element.remove()
+  }
+}
+
 const removeOffendingTag = (rule: TagRule) => {
   Log("IW2BF removeOffendingTag : ", rule)
   const elements = document.querySelectorAll(rule.offenderSelector) ?? false
@@ -47,7 +104,7 @@ const removeOffendingTag = (rule: TagRule) => {
 
 const selectElement = (rule: Rule) => {
   if (!rule.offenderSelector) return
-  let el;
+  let el
   if (rule.selectByClass) {
     el = document.getElementsByClassName(rule.offenderSelector)
     return el
@@ -85,7 +142,7 @@ const removeOffendingClass = (rule: ClassRule) => {
 
 const newLog = (timeString: string) => {
   if (config.silenceConsole) return
-  if(config.collapseConsole) return console.groupCollapsed(timeString)
+  if (config.collapseConsole) return console.groupCollapsed(timeString)
   return console.group(timeString)
 }
 
@@ -103,40 +160,25 @@ const runRuleSetByName = (name: string) => {
   if (!ruleSet.rules)
     throw new Error(`IW2BF runRuleSetByName : ${name} not found`)
   Log("IW2BF runRuleSetByName : ", ruleSet)
+  const actionsMap = {
+    tag: removeOffendingTag,
+    styleTag: removeOffendingStyle,
+    cssClass: removeOffendingClass,
+    content: removeOffendingTagByContent,
+    ariaLabel: removeOffendingTagByAriaLabel,
+    tagLabel: removeOffendingTagsByAriaLabel
+  }
   ruleSet.rules.forEach((rule) => {
-    switch (rule.type) {
-      case "tag":
-        try {
-          removeOffendingTag(rule)
-        } catch(e) {
-          LogError("IW2BF Tag Error : ", e)
-        }
-        break
-      case "styleTag":
-        try {
-          removeOffendingStyle(rule)
-        } catch (e) {
-          LogError("IW2BF Style Error : ", e)
-        }
-        break
-      case "cssClass":
-        try {
-          removeOffendingClass(rule)
-        } catch (e) {
-          LogError("IW2BF Class Error : ", e)
-        }
-        break
-      default:
-        Log("IW2BF runRuleSetByName : default")
-        throw new Error(`IW2BF runRuleSetByName : ${rule.type} not found`)
+    try {
+      actionsMap[rule.type](rule)
+    } catch (e) {
+      LogError(`IW2BF ${rule.type} : `, e)
     }
   })
   console.groupEnd()
 }
 
-
 class App {
-
   init() {
     const currentHost: string = location.hostname ?? "localhost"
     Log(`IW2BF : ${currentHost}}`)
@@ -150,9 +192,8 @@ class App {
       setInterval(() => {
         if (config.clearConsole) console.clear()
         runRuleSetByName(siteWatch[site].name)
-      }
-      , watchInterval)
-    } 
+      }, watchInterval)
+    }
   }
 
   launchOnReadyStateComplete() {
@@ -162,7 +203,7 @@ class App {
       Log("IW2BF isChrome")
       document.addEventListener("readystatechange", (event) => {
         Log("IW2BF watching page state :", document.readyState)
-        let run = false;
+        let run = false
         if (document.readyState === "complete") run = true
         if (!run) return
         try {
@@ -176,10 +217,9 @@ class App {
       Log("IW2BF isFirefox")
       try {
         this.init()
-      } catch(e) {
+      } catch (e) {
         LogError("IW2BF Error in FF Launcher : ", e)
       }
-      
     }
   }
 }
@@ -187,7 +227,7 @@ class App {
 const app = new App()
 try {
   app.launchOnReadyStateComplete()
-} catch(e) {
+} catch (e) {
   LogError("IW2BF Error : ", e)
 }
 
