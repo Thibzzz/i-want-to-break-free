@@ -63,7 +63,7 @@ const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
     let parent = element.parentElement
     if (!parent) continue
     let iteration = 0
-    while (parent || iteration > safetyBump) {
+    while (parent || iteration <= safetyBump) {
       iteration++;
       const classString = parent.getAttribute("class") ?? ""
       if (classString.includes(rule.offenderSelector)) {
