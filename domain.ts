@@ -8,11 +8,15 @@ type Rule = {
   offendingClass?: string | undefined
   content?: string | undefined
   ariaLabel?: string | undefined
+  tagName ?: string | undefined
 }
 
 type TagRule = Pick<Rule, 'name' | 'type' | 'offenderSelector'>;
 
 type ContentRule = Pick<Rule, 'name' | 'type' | 'offenderSelector' | 'content'>;
+
+// tagName + INNER HTML then matching offending selector in parents
+type NestedContentRule = Pick<Rule,  'name' | 'type' | 'offenderSelector' | 'content' | 'tagName'>;
 
 type AriaRule = Pick<Rule, 'name' | 'type' | 'offenderSelector' >;
 
@@ -24,4 +28,4 @@ type ClassRule = Pick <Rule, 'name' | 'type' | 'offenderSelector' | 'offendingCl
 
 type RuleType = 'tag' | 'styleTag';
 
-export type {Rule, StyleRule, TagRule, RuleType, ClassRule, ContentRule, AriaRule, AriaTagRule};
+export type {Rule, StyleRule, TagRule, RuleType, ClassRule, ContentRule, AriaRule, AriaTagRule, NestedContentRule};
