@@ -55,13 +55,15 @@ const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
 
 const removeOffendingTagByContent = (rule: ContentRule) => {
   Log("IW2BF removeOffendingTagByContent : ", rule)
-  const elements = document.querySelectorAll(rule.offenderSelector) ?? false
+  const els = document.querySelectorAll(rule.offenderSelector) ?? false
+  if (!els) return
+  const elements = Array.from(els)
   Log("IW2BF removeOffendingTagByContent : ", elements)
-  if (!elements) return
+  if (!elements || elements.length === 0) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
     Log("IW2BF removeOffendingTagByContent : ", element)
-    const text = element.textContent ?? ""
+    const text = element.innerHTML ?? ""
     if (!text.includes(rule.content)) continue
     return element.remove()
   }
@@ -74,7 +76,9 @@ const removeOffendingTagByContent = (rule: ContentRule) => {
 const removeElementsByNestedContent = (rule: NestedContentRule) => {
   const safetyBump = 15
   Log("IW2BF removeElementsByNestedContent : ", rule)
-  const elements = document.getElementsByTagName(rule.tagName) ?? false
+  const els = document.getElementsByTagName(rule.tagName) ?? false
+  if (!els)  return
+  const elements = Array.from(els)
   Log("IW2BF removeElementsByNestedContent : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
@@ -157,4 +161,4 @@ const actionsMap = {
   nestedContent: removeElementsByNestedContent
 }
 
-export default actionsMap
+export {actionsMap}

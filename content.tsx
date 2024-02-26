@@ -1,6 +1,6 @@
 import { config } from "./config"
 import { Log, newLog, LogError } from "./src/utils/logger"
-import actionsMap from "~src/actions/actionsMap"
+import {actionsMap} from "./src/actions/actionsMap"
 
 Log("IW2BF Boot content script : ", config)
 
@@ -58,15 +58,15 @@ class App {
     const currentHost: string = location.hostname ?? "localhost"
     Log(`IW2BF : ${currentHost}}`)
 
-    for (const site in siteWatch) {
-      const test = currentHost.match(siteWatch[site].urlRegexp)
+    for (let i = 0; i < siteWatch.length; i++) {
+      const test = currentHost.match(siteWatch[i].urlRegexp)
       if (!test) continue
-      Log("IW2BF has matched with : ", siteWatch[site].urlRegexp)
-      const watchInterval = siteWatch[site].interval ?? config.defaultInterval
-      runRuleSetByName(siteWatch[site].name)
+      Log("IW2BF has matched with : ", siteWatch[i].url)
+      const watchInterval = siteWatch[i].interval ?? config.defaultInterval
+      runRuleSetByName(siteWatch[i].name)
       setInterval(() => {
         if (config.clearConsole) console.clear()
-        runRuleSetByName(siteWatch[site].name)
+        runRuleSetByName(siteWatch[i].name)
       }, watchInterval)
     }
   }

@@ -20,10 +20,10 @@ const linkedinRules = {
       offenderSelector: "occludable-update",
     },
     {
-      name: "remove linkedin learning from feed, i don't want to train your algorithms",
+      name: "remove 'expert answers', i don't want to train your algorithms",
       type: "nestedContent",
       tagName: "span",
-      content: "Réponses d'experts",
+      content: "Réponses d’experts sur",
       offenderSelector: "occludable-update",
     },
     {
