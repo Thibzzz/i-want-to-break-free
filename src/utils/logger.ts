@@ -1,4 +1,4 @@
-import { config } from "./../../config"
+import { config } from "../config"
 
 const newLog = (timeString: string) => {
   if (config.silenceConsole) return

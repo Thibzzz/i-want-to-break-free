@@ -17,7 +17,7 @@ const linkedinRules = {
       type: "nestedContent",
       tagName: "span",
       content: "Suggestions",
-      offenderSelector: "occludable-update",
+      offenderSelector: "feed-shared-update-v2",
     },
     {
       name: "remove 'expert answers', i don't want to train your algorithms",

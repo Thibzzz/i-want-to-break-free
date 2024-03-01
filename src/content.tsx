@@ -1,6 +1,6 @@
 import { config } from "./config"
-import { Log, newLog, LogError } from "./src/utils/logger"
-import {actionsMap} from "./src/actions/actionsMap"
+import { Log, newLog, LogError } from "./utils/logger"
+import {actionsMap} from "./actions/actionsMap"
 
 Log("IW2BF Boot content script : ", config)
 

@@ -1,5 +1,5 @@
-import { linkedinRules } from "~rulesets/linkedin"
-import { redditRules } from "~rulesets/reddit"
+import { linkedinRules } from "./rulesets/linkedin"
+import { redditRules } from "./rulesets/reddit"
 
 const config = {
   defaultInterval: 6 * 1000, // 6 seconds
@@ -17,7 +17,6 @@ const config = {
       name: "linkedin",
       url: "https://www.linkedin.com/",
       urlRegexp: ".*(linkedin.com).*",
-      interval : 1 * 1000
     }
   ],
   ruleSets: [linkedinRules, redditRules]

@@ -7,7 +7,7 @@ import type {
   StyleRule,
   TagRule,
   NestedContentRule
-} from "./../../domain"
+} from "../domain"
 import { Log, LogError } from "./../utils/logger"
 
 const removeOffendingTagByAriaLabel = (rule: AriaRule) => {
