@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "plasmo dev  --target=chrome-mv3 --verbose --with-src --with-popup --with-tailwindcss",
     "dev:ff": "plasmo dev  --target=firefox-mv2 --verbose --with-src --with-popup --with-tailwindcss",
-    "build": "plasmo build --with-src --with-popup --with-tailwindcss",
     "build:ff": "plasmo build --target=firefox-mv2 --verbose --zip --source-maps --with-src --with-popup --with-tailwindcss",
+    "build:ch": "plasmo build --target=chrome-mv3 --verbose --zip --source-maps --with-src --with-popup --with-tailwindcss",
     "test": "plasmo test",
     "bundle:source": "git archive -o source-latest.zip HEAD"
   },
@@ -38,12 +38,10 @@
   },
   "manifest": {
     "permissions": [
-      "webNavigation",
-      "storage",
-      "activeTab"
+      "storage"
     ],
     "host_permissions": [
       "https://*/*"
     ]
-  }
+  } 
 }
