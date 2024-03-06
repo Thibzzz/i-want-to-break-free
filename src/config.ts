@@ -12,11 +12,13 @@ const config = {
       name: "reddit",
       url: "https://wwww.reddit.com/",
       urlRegexp: ".*(reddit.com).*",
+      interval: 6 * 1000, // 6 second
     },
     {
       name: "linkedin",
       url: "https://www.linkedin.com/",
       urlRegexp: ".*(linkedin.com).*",
+      interval: 1 * 1000, // .5 seconds
     }
   ],
   ruleSets: [linkedinRules, redditRules]

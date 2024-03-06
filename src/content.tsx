@@ -1,6 +1,7 @@
 import { config } from "./config"
 import { Log, newLog, LogError } from "./utils/logger"
 import {actionsMap} from "./actions/actionsMap"
+import { Storage } from "@plasmohq/storage"
 
 Log("IW2BF Boot content script : ", config)
 
@@ -36,65 +37,73 @@ const getTimeString = () => {
 
 const runRuleSetByName = (name: string) => {
   const timeString = getTimeString()
-  newLog(timeString)
-  Log("IW2BF runRuleSetByName : ", name)
   const [ruleSet] = ruleSets.filter((a) => a.name === name) ?? []
   if (!ruleSet.rules)
-    throw new Error(`IW2BF runRuleSetByName : ${name} not found`)
-  Log("IW2BF runRuleSetByName : ", ruleSet)
-  
-  ruleSet.rules.forEach((rule) => {
-    try {
-      actionsMap[rule.type](rule)
-    } catch (e) {
+  throw new Error(`IW2BF runRuleSetByName : ${name} not found`)
+
+ruleSet.rules.forEach((rule) => {
+  try {
+    actionsMap[rule.type](rule)
+  } catch (e) {
+      newLog(timeString)
       LogError(`IW2BF ${rule.type} : `, e)
+      console.groupEnd()
     }
   })
-  console.groupEnd()
 }
 
 class App {
-  init() {
-    const currentHost: string = location.hostname ?? "localhost"
-    Log(`IW2BF : ${currentHost}}`)
+  private runners: NodeJS.Timer[]
+  private watcher : any
+  private rules : any
+  private storage : Storage
+  constructor() {
+    this.runners = []
+    this.storage = new Storage();
+    this.watcher = this.storage.watch({
+      "rules": (c) => {
+        console.log(c.newValue)
+        this.runners.map((runner) => clearInterval(runner))
+        this.runners = []
+        this.init()
+        console.log("IW2BF : rules updated => relaunch init", this.runners, c.newValue)
+      },
+    })
+  }
+  async init() {
 
-    for (let i = 0; i < siteWatch.length; i++) {
-      const test = currentHost.match(siteWatch[i].urlRegexp)
+    const rules = await this.storage.get("rules") ?? siteWatch
+    const currentHost: string = location.hostname ?? "localhost"
+    Log(`IW2BF : ${currentHost}}`, rules)
+
+    for (let i = 0; i < rules.length; i++) {
+      const test = currentHost.match(rules[i].urlRegexp)
       if (!test) continue
-      Log("IW2BF has matched with : ", siteWatch[i].url)
-      const watchInterval = siteWatch[i].interval ?? config.defaultInterval
-      runRuleSetByName(siteWatch[i].name)
-      setInterval(() => {
+      Log("IW2BF has matched with : ", rules[i].url)
+      const watchInterval = rules[i]?.interval ?? config.defaultInterval
+      runRuleSetByName(rules[i].name)
+      const ruleRunner = setInterval(() => {
         if (config.clearConsole) console.clear()
-        runRuleSetByName(siteWatch[i].name)
+        runRuleSetByName(rules[i].name)
       }, watchInterval)
+      this.runners.push(ruleRunner)
     }
+    
   }
 
-  launchOnReadyStateComplete() {
+  async launchOnReadyStateComplete() {
     Log("IW2BF launching App")
 
     if (isChrome()) {
       Log("IW2BF isChrome")
-      document.addEventListener("readystatechange", (event) => {
-        Log("IW2BF watching page state :", document.readyState)
-        let run = false
-        if (document.readyState === "complete") run = true
-        if (!run) return
-        try {
-          this.init()
-        } catch (e) {
-          LogError("IW2BF Error in Chrome Launcher : ", e)
-        }
-      })
     }
     if (isFirefox()) {
       Log("IW2BF isFirefox")
-      try {
-        this.init()
-      } catch (e) {
-        LogError("IW2BF Error in FF Launcher : ", e)
-      }
+    }
+    try {
+      await this.init()
+    } catch (e) {
+      LogError("IW2BF Error in Launcher : ", e)
     }
   }
 }

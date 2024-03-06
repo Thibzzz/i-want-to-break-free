@@ -11,14 +11,14 @@ import type {
 import { Log, LogError } from "./../utils/logger"
 
 const removeOffendingTagByAriaLabel = (rule: AriaRule) => {
-  Log("IW2BF removeOffendingTagByAriaLabel : ", rule)
+  // Log("IW2BF removeOffendingTagByAriaLabel : ", rule)
   const selector = `[aria-label="${rule.offenderSelector}"]`
   const elements = document.querySelectorAll(selector) ?? false
-  Log("IW2BF removeOffendingTagByAriaLabel : ", elements)
+  // Log("IW2BF removeOffendingTagByAriaLabel : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
-    Log("IW2BF removeOffendingTagByAriaLabel : ", element)
+    // Log("IW2BF removeOffendingTagByAriaLabel : ", element)
     return element.remove()
   }
 }
@@ -30,14 +30,14 @@ const removeOffendingTagByAriaLabel = (rule: AriaRule) => {
  */
 const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
   const safetyBump = 15
-  Log("IW2BF removeOffendingTagsByAriaLabel : ", rule)
+  // Log("IW2BF removeOffendingTagsByAriaLabel : ", rule)
   const selector = `[aria-label="${rule.ariaLabel}"]`
   const elements = document.querySelectorAll(selector) ?? false
-  Log("IW2BF removeOffendingTagsByAriaLabel : ", elements)
+  // Log("IW2BF removeOffendingTagsByAriaLabel : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
-    Log("IW2BF removeOffendingTagsByAriaLabel : ", element)
+    // Log("IW2BF removeOffendingTagsByAriaLabel : ", element)
     let parent = element.parentElement
     if (!parent) continue
     let iteration = 0
@@ -45,7 +45,7 @@ const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
       iteration++
       const classString = parent.getAttribute("class") ?? ""
       if (classString.includes(rule.offenderSelector)) {
-        Log("IW2BF removeOffendingTagsByAriaLabel : ", parent)
+        // Log("IW2BF removeOffendingTagsByAriaLabel : ", parent)
         return parent.remove()
       }
       parent = parent.parentElement
@@ -54,15 +54,15 @@ const removeOffendingTagsByAriaLabel = (rule: AriaTagRule) => {
 }
 
 const removeOffendingTagByContent = (rule: ContentRule) => {
-  Log("IW2BF removeOffendingTagByContent : ", rule)
+  // Log("IW2BF removeOffendingTagByContent : ", rule)
   const els = document.querySelectorAll(rule.offenderSelector) ?? false
   if (!els) return
   const elements = Array.from(els)
-  Log("IW2BF removeOffendingTagByContent : ", elements)
+  // Log("IW2BF removeOffendingTagByContent : ", elements)
   if (!elements || elements.length === 0) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
-    Log("IW2BF removeOffendingTagByContent : ", element)
+    // Log("IW2BF removeOffendingTagByContent : ", element)
     const text = element.innerHTML ?? ""
     if (!text.includes(rule.content)) continue
     return element.remove()
@@ -75,15 +75,15 @@ const removeOffendingTagByContent = (rule: ContentRule) => {
  */
 const removeElementsByNestedContent = (rule: NestedContentRule) => {
   const safetyBump = 15
-  Log("IW2BF removeElementsByNestedContent : ", rule)
+  // Log("IW2BF removeElementsByNestedContent : ", rule)
   const els = document.getElementsByTagName(rule.tagName) ?? false
   if (!els)  return
   const elements = Array.from(els)
-  Log("IW2BF removeElementsByNestedContent : ", elements)
+  // Log("IW2BF removeElementsByNestedContent : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
-    Log("IW2BF removeElementsByNestedContent : ", element)
+    // Log("IW2BF removeElementsByNestedContent : ", element)
     const text = element.innerHTML ?? ""
     if (!text.includes(rule.content)) continue
     let parent = element.parentElement
@@ -93,7 +93,7 @@ const removeElementsByNestedContent = (rule: NestedContentRule) => {
       iteration++
       const classString = parent.getAttribute("class") ?? ""
       if (classString.includes(rule.offenderSelector)) {
-        Log("IW2BF removeElementsByNestedContent : ", parent)
+        // Log("IW2BF removeElementsByNestedContent : ", parent)
         return parent.remove()
       }
       parent = parent.parentElement
@@ -102,13 +102,13 @@ const removeElementsByNestedContent = (rule: NestedContentRule) => {
 }
 
 const removeOffendingTag = (rule: TagRule) => {
-  Log("IW2BF removeOffendingTag : ", rule)
+  // Log("IW2BF removeOffendingTag : ", rule)
   const elements = document.querySelectorAll(rule.offenderSelector) ?? false
-  Log("IW2BF removeOffendingTag : ", elements)
+  // Log("IW2BF removeOffendingTag : ", elements)
   if (!elements) return
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i]
-    Log("IW2BF removeOffendingTag : ", element)
+    // Log("IW2BF removeOffendingTag : ", element)
     return element.remove()
   }
 }
@@ -129,25 +129,25 @@ const selectElement = (rule: Rule) => {
 }
 
 const removeOffendingStyle = (rule: StyleRule) => {
-  Log("IW2BF removeOffendingStyle : ", rule)
+  // Log("IW2BF removeOffendingStyle : ", rule)
   const [element] = selectElement(rule) ?? false
-  Log("IW2BF removeOffendingStyle : ", element)
+  // Log("IW2BF removeOffendingStyle : ", element)
   if (!element) return
   const style = element.hasAttribute("style")
     ? element.getAttribute("style")
     : false
-  Log("IW2BF removeOffendingStyle : ", style)
+  // Log("IW2BF removeOffendingStyle : ", style)
   if (!style) return
   const newStyle = style.replace(rule.offendingStyle, "")
   return element.setAttribute("style", newStyle)
 }
 
 const removeOffendingClass = (rule: ClassRule) => {
-  Log("IW2BF removeOffendingClass : ", rule)
+  // Log("IW2BF removeOffendingClass : ", rule)
   let [el] = selectElement(rule) ?? false
   if (!el || !el.classList) return
   if (!el.classList.length) return
-  Log("IW2BF removeOffendingClass : ", el)
+  // Log("IW2BF removeOffendingClass : ", el)
   el.classList.remove(rule.offendingClass)
 }
 

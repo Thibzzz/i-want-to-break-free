@@ -1,12 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {},
-  },
+  mode: "jit",
+  content: ["./src/**/*.{tsx,html}"],
+  darkMode: "media",
+  // prefix: "plasmo-",
   plugins: [require("daisyui")],
+  daisyui: {
+    themes: ["garden"]
+  }
 }
