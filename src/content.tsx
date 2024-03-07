@@ -1,8 +1,8 @@
+import { Storage } from "@plasmohq/storage"
+import { actionsMap } from "./actions/actionsMap"
 import { config } from "./config"
 import type { RuleParams } from "./domain"
-import { Log, newLog, LogError } from "./utils/logger"
-import {actionsMap} from "./actions/actionsMap"
-import { Storage } from "@plasmohq/storage"
+import { Log, LogError, newLog } from "./utils/logger"
 
 Log("IW2BF Boot content script : ", config)
 
@@ -32,20 +32,16 @@ const getTimeString = () => {
   return timeString
 }
 
-/**
- * 
- * @param name 
- */
 const runRuleSetByName = (name: string) => {
   const timeString = getTimeString()
   const [ruleSet] = ruleSets.filter((a) => a.name === name) ?? []
   if (!ruleSet.rules)
-  throw new Error(`IW2BF runRuleSetByName : ${name} not found`)
+    throw new Error(`IW2BF runRuleSetByName : ${name} not found`)
 
-ruleSet.rules.forEach((rule) => {
-  try {
-    actionsMap[rule.type](rule)
-  } catch (e) {
+  ruleSet.rules.forEach((rule) => {
+    try {
+      actionsMap[rule.type](rule)
+    } catch (e) {
       newLog(timeString)
       LogError(`IW2BF ${rule.type} : `, e)
       console.groupEnd()
@@ -56,28 +52,29 @@ ruleSet.rules.forEach((rule) => {
 // This is the main entry point for the content script, it's tested in src/test_content.tsx
 export { runRuleSetByName }
 
-
 class App {
   private runners: NodeJS.Timer[]
-  private watcher : any
-  private rules : any
-  private storage : Storage
+  private watcher: any
+  private storage: Storage
   constructor() {
     this.runners = []
-    this.storage = new Storage();
+    this.storage = new Storage()
     this.watcher = this.storage.watch({
-      "rules": (c) => {
+      rules: (c) => {
         console.log(c.newValue)
         this.runners.map((runner) => clearInterval(runner))
         this.runners = []
         this.init()
-        console.log("IW2BF : rules updated => relaunch init", this.runners, c.newValue)
-      },
+        console.log(
+          "IW2BF : rules updated => relaunch init",
+          this.runners,
+          c.newValue
+        )
+      }
     })
   }
   async init() {
-
-    const rules : RuleParams[] = await this.storage.get("rules") ?? siteWatch
+    const rules: RuleParams[] = (await this.storage.get("rules")) ?? siteWatch
     const currentHost: string = location.hostname ?? "localhost"
     Log(`IW2BF : ${currentHost}}`, rules)
 
@@ -93,7 +90,6 @@ class App {
       }, watchInterval)
       this.runners.push(ruleRunner)
     }
-    
   }
 
   async launchOnReadyStateComplete() {
