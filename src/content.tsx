@@ -1,4 +1,5 @@
 import { config } from "./config"
+import type { RuleParams } from "./domain"
 import { Log, newLog, LogError } from "./utils/logger"
 import {actionsMap} from "./actions/actionsMap"
 import { Storage } from "@plasmohq/storage"
@@ -25,16 +26,16 @@ const isFirefox = () => {
   return browserString === "firefox"
 }
 
-
-
-
 const getTimeString = () => {
   const dateString = new Date().getTime()
   let timeString = `IW2BF-${dateString}`
   return timeString
 }
 
-
+/**
+ * 
+ * @param name 
+ */
 const runRuleSetByName = (name: string) => {
   const timeString = getTimeString()
   const [ruleSet] = ruleSets.filter((a) => a.name === name) ?? []
@@ -51,6 +52,10 @@ ruleSet.rules.forEach((rule) => {
     }
   })
 }
+
+// This is the main entry point for the content script, it's tested in src/test_content.tsx
+export { runRuleSetByName }
+
 
 class App {
   private runners: NodeJS.Timer[]
@@ -72,7 +77,7 @@ class App {
   }
   async init() {
 
-    const rules = await this.storage.get("rules") ?? siteWatch
+    const rules : RuleParams[] = await this.storage.get("rules") ?? siteWatch
     const currentHost: string = location.hostname ?? "localhost"
     Log(`IW2BF : ${currentHost}}`, rules)
 

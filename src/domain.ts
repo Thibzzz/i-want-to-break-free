@@ -11,6 +11,8 @@ type Rule = {
   tagName ?: string | undefined
 }
 
+export type RuleParams = { name: string, url: string, urlRegexp: string, interval ?: number }
+
 type TagRule = Pick<Rule, 'name' | 'type' | 'offenderSelector'>;
 
 type ContentRule = Pick<Rule, 'name' | 'type' | 'offenderSelector' | 'content'>;
