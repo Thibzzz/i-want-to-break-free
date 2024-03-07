@@ -49,7 +49,7 @@ const runRuleSetByName = (name: string) => {
   })
 }
 
-// This is the main entry point for the content script, it's tested in src/test_content.tsx
+// TODO : test this function
 export { runRuleSetByName }
 
 class App {
@@ -59,6 +59,7 @@ class App {
   constructor() {
     this.runners = []
     this.storage = new Storage()
+    // TODO : test this stuff and the cleaning of the runners, especially for overflows that can't lock the browser
     this.watcher = this.storage.watch({
       rules: (c) => {
         console.log(c.newValue)
